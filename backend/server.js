@@ -1,27 +1,49 @@
 require("dotenv").config();
 
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
-const connectDB = require("./config/db")
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-// middleware to handle CORS
+// CORS
 app.use(
-    cors({
-        origin: process.env.CLIENT_URL || "*",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
+  cors({
+    origin: process.env.CLIENT_URL || "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
 
+// JSON body
 app.use(express.json());
 
-connectDB();
+// Serve uploaded files statically
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, ()=> console.log(`Server is running on port ${PORT}`));
+// Routes
+app.use("/api/v1/auth", authRoutes);
 
+// Multer/file-type errors as JSON
+app.use((err, req, res, next) => {
+  if (err?.name === "MulterError") {
+    return res.status(400).json({ message: err.message });
+  }
+  if (err?.message && /Only .* allowed/i.test(err.message)) {
+    return res.status(400).json({ message: err.message });
+  }
+  return next(err);
+});
 
-
+(async () => {
+  try {
+    await connectDB();
+    const PORT = process.env.PORT || 8000; // ← default to 8000 per your setup
+    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+  } catch (e) {
+    console.error("DB connection failed:", e);
+    process.exit(1);
+  }
+})();
