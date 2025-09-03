@@ -40,6 +40,14 @@ app.use((err, req, res, next) => {
   return next(err);
 });
 
+// Fallback JSON error handler (prevents hanging on thrown errors)
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  const status = err?.status || 500;
+  const message = err?.message || "Server Error";
+  return res.status(status).json({ message });
+});
+
 (async () => {
   try {
     await connectDB();

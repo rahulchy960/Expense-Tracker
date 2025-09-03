@@ -3,19 +3,16 @@ const Income = require("../models/Income");
 
 exports.addIncome = async (req, res) => {
   try {
-    // ✅ lowercase "user"
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const userId = req.user.id;
 
-    // ✅ validate inputs
     const { icon, source, amount, date } = req.body;
     if (!source || amount === undefined || !date) {
       return res.status(400).json({ message: "source, amount, and date are required" });
     }
 
-    // ✅ cast amount & date safely
     const amt = Number(amount);
     if (!Number.isFinite(amt)) {
       return res.status(400).json({ message: "amount must be a number" });
@@ -52,10 +49,10 @@ exports.getAllIncome = async (req, res, next) => {
 
     return res.status(200).json(income);
   } catch (error) {
-    // either pass to error middleware:
-    if (next) return next(error);
-    // or reply directly:
-    return res.status(500).json({ message: "Server Error" });
+    // Always respond to avoid hanging requests
+    return res
+      .status(500)
+      .json({ message: "Server Error", error: error?.message || String(error) });
   }
 };
 
