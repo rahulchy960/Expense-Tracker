@@ -35,6 +35,8 @@ app.use("/api/v1/expense", expenseRoutes);
 
 app.use("/api/v1/dashboard", dashboardRoutes);
 
+app.get("/", (_, res) => res.send("Backend is up on :8000"));
+
 // Multer/file-type errors as JSON
 app.use((err, req, res, next) => {
   if (err?.name === "MulterError") {
