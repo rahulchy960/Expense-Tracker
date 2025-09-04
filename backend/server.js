@@ -6,6 +6,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const incomeRoutes = require("./routes/incomeRoutes");
+const expenseRoutes = require("./routes/expenseRoutes");
 
 const app = express();
 
@@ -28,6 +29,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/v1/auth", authRoutes);
 
 app.use("/api/v1/income", incomeRoutes);
+
+app.use("/api/v1/expense", expenseRoutes);
 
 // Multer/file-type errors as JSON
 app.use((err, req, res, next) => {
