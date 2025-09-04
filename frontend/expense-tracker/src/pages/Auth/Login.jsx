@@ -13,7 +13,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
-  const { updateUser } = useContext(userContext)
+  const { updateUser } = useContext(userContext);
 
   const navigate = useNavigate();
 

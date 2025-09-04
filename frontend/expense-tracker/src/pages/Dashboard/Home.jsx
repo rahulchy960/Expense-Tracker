@@ -2,7 +2,11 @@ import React from 'react'
 
 function Home() {
   return (
-    <div>Home</div>
+    <DashboardLayout>
+      <div className='my-5 mx-auto'>
+
+      </div>
+    </DashboardLayout>
   )
 }
 
