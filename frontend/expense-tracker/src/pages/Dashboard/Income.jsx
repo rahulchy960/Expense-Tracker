@@ -4,8 +4,10 @@ import IncomeOverView from '../../components/income/IncomeOverView';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import { useEffect } from 'react';
+import { useUserAuth } from '../../hooks/useUserAuth';
 
 function Income() {
+  useUserAuth();
   const [incomeData, setIncomeData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openDeleteAlert, setOpenDeleteAlert] = useState({
@@ -40,7 +42,7 @@ function Income() {
   }, []);
 
   return (
-    <DashboardLayout activeMenu={Income}>
+    <DashboardLayout activeMenu="Income">
       <div className='my-5 mx-auto'>
         <div className='grid grid-cols-1 gap-6'>
           <div className=''>
