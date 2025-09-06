@@ -34,12 +34,33 @@ export const prepareExpenseBarChartData = (data = []) => {
     return chartData;
 };
 
+
 export const prepareIncomeBarChartData = (data = []) => {
-  const sortedData = [...data].sort((a,b) => new Date(a.date) - new Date(b.date));
-  const chartData = sortedData.map((item) => ({
-    month: moment(item?.date).format("Do MMM"),
-    amount: item?.amount,
-    source: item?.source,
+  if (!Array.isArray(data)) return [];
+
+  const grouped = {};
+
+  data.forEach((item) => {
+    const dateKey = moment(item?.date).format("DD MMM"); // e.g. "06 Sep"
+    const amt = Number(item?.amount) || 0;
+
+    if (!grouped[dateKey]) {
+      grouped[dateKey] = 0;
+    }
+    grouped[dateKey] += amt; // sum all amounts for same day
+  });
+
+  // Convert grouped object into an array
+  const chartData = Object.entries(grouped).map(([date, total]) => ({
+    category: date,   // XAxis
+    amount: total,    // Bar
   }));
-  return chartData;
-}
+
+  // Sort by actual date (not string)
+  return chartData.sort(
+    (a, b) =>
+      moment(a.category, "DD MMM").toDate() -
+      moment(b.category, "DD MMM").toDate()
+  );
+};
+
