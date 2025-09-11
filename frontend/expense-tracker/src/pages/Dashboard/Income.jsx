@@ -5,6 +5,8 @@ import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import { useEffect } from 'react';
 import { useUserAuth } from '../../hooks/useUserAuth';
+import { Modal } from '../../components/layouts/Modal';
+import AddIncomeForm from '../../components/income/AddIncomeForm';
 
 function Income() {
   useUserAuth();
@@ -52,6 +54,14 @@ function Income() {
             />
           </div>
         </div>
+
+        <Modal
+          isOpen = {openAddIncomeModal}
+          onClose = {() => setOpenAddIncomeModal(false)}
+          title = "Add Income"
+        >
+          <AddIncomeForm onAddIncome={handleAddIncome} />
+        </Modal>
       </div>
     </DashboardLayout>
   )
