@@ -80,7 +80,41 @@ function Income() {
       );
     }
   };
-  const handleDownloadIncomeDetails = async () => {};
+  const handleDownloadIncomeDetails = async () => {
+    try {
+      const headers = ["Source", "Amount", "Date"];
+      const rows = incomeData.map((i) => [
+        i?.source ?? "",
+        i?.amount ?? "",
+        i?.date ? new Date(i.date).toISOString().split("T")[0] : "",
+      ]);
+
+      const escapeCSV = (value) => {
+        const str = String(value ?? "");
+        const needsQuotes = /[",\n]/.test(str);
+        const escaped = str.replace(/"/g, '""');
+        return needsQuotes ? `"${escaped}"` : escaped;
+      };
+
+      const csv = [headers, ...rows]
+        .map((row) => row.map(escapeCSV).join(","))
+        .join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "income.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("Income details downloaded successfully");
+    } catch (error) {
+      console.error("Error downloading income details:", error);
+      toast.error("Failed to download income details");
+    }
+  };
 
   useEffect(() => {
     fetchIncomeDetails();

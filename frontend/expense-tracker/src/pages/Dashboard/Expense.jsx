@@ -84,20 +84,39 @@ function Expense() {
   };
   const handleDownloadExpenseDetails = async () => {
     try {
-      const response = await axiosInstance.get(API_PATHS.EXPENSE.DOWNLOAD_EXPENSE, {
-        responseType: "blob"
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      // Build CSV on the client to ensure category, amount, and date are included
+      const headers = ["Category", "Amount", "Date"];
+      const rows = expenseData.map((e) => [
+        e?.category ?? "",
+        e?.amount ?? "",
+        e?.date ? new Date(e.date).toISOString().split("T")[0] : "",
+      ]);
+
+      const escapeCSV = (value) => {
+        const str = String(value ?? "");
+        const needsQuotes = /[",\n]/.test(str);
+        const escaped = str.replace(/"/g, '""');
+        return needsQuotes ? `"${escaped}"` : escaped;
+      };
+
+      const csv = [headers, ...rows]
+        .map((row) => row.map(escapeCSV).join(","))
+        .join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "expenses.csv"); // or .xlsx / .pdf
+      link.setAttribute("download", "expenses.csv");
       document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
       toast.success("Expense details downloaded successfully");
     } catch (error) {
       console.error("Error downloading expense details:", error);
       toast.error("Failed to download expense details");
-    };
+    }
   }
   useEffect(() => {
     fetchExpenseDetails();
