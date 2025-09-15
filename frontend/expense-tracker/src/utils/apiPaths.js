@@ -1,7 +1,4 @@
-// Use env for production deployments (e.g., Vercel)
-// If not set, default to same-origin (empty string)
-const RAW_BASE = import.meta.env?.VITE_API_BASE_URL || "";
-export const BASE_URL = RAW_BASE.replace(/\/+$/, "");
+export const BASE_URL = "http://localhost:8000";
 
 export const API_PATHS = {
     AUTH: {
